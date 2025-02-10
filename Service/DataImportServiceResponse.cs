@@ -1,6 +1,6 @@
 ﻿namespace CityTemperatureApp.Service;
 
-public enum DataImportServiceResult
+public enum DataImportServiceResponse
 {
     Unavailable,
     Accepted

@@ -2,5 +2,5 @@
 
 public interface IDataImportService
 {
-    DataImportServiceResult RefreshData();
+    DataImportServiceResponse RefreshData();
 }

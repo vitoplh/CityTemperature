@@ -84,8 +84,8 @@ internal static class CityTemperatureEndpoints
         var result = dataImportService.RefreshData();
         return result switch
         {
-            DataImportServiceResult.Accepted => TypedResults.Ok(),
-            DataImportServiceResult.Unavailable => TypedResults.Problem(new ProblemDetails
+            DataImportServiceResponse.Accepted => TypedResults.Ok(),
+            DataImportServiceResponse.Unavailable => TypedResults.Problem(new ProblemDetails
             {
                 Status = StatusCodes.Status503ServiceUnavailable,
                 Title = "Data Import Service Unavailable",

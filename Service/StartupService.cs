@@ -7,7 +7,7 @@ public class StartupService(IDataImportService dataImportService) : IHostedServi
     public Task StartAsync(CancellationToken cancellationToken)
     {
         var result = _dataImportService.RefreshData();
-        if (result != DataImportServiceResult.Accepted)
+        if (result != DataImportServiceResponse.Accepted)
         {
             throw new Exception("Failed to start city initialization service");
         }

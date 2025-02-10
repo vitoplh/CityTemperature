@@ -19,14 +19,14 @@ public class DataImportService(
     private DataImportServiceState _state = DataImportServiceState.Uninitialized;
     private readonly string _filePath = options.Value.AbsoluteFilePath;
 
-    public DataImportServiceResult RefreshData()
+    public DataImportServiceResponse RefreshData()
     {
         if (_state == DataImportServiceState.Processing)
         {
-            return DataImportServiceResult.Unavailable;
+            return DataImportServiceResponse.Unavailable;
         }
         Task.Run(ProcessFile);
-        return DataImportServiceResult.Accepted;
+        return DataImportServiceResponse.Accepted;
     }
 
     private async Task ProcessFile()
