@@ -30,4 +30,5 @@ A simple api key authentication was used ([Nick's Video](https://www.youtube.com
 - model uses primitive types, DDD favors value types and entities
 - add pagination to the get all cities method
 - better refreshing in the repository layer
-- cleanup Program.cs (will need to look upp
+- cleanup Program.cs (will need to look up a video I saw for inspiration)
+- add logging to exception middleware for production
