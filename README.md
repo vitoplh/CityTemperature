@@ -17,9 +17,9 @@ For the sake of simplicity an in-memory database was used (at first I wondered, 
 
 As for how to trigger updates, I was a bit torn. At first I wanted to implement detection for a file change, but turns out it's not always reliable. In Azure, we'd probably upload the file to blob storage, then have an event triggering an function that would process and load the file to the SQL server, making it completely decoupled from the API side (and I believe Azure SQL uses RCSI by default, so updates would not block reads). I am ignoring the edge case, if someone was accesing data by using pagination and the data would be updated then
 
-There have been some [changes](https://devblogs.microsoft.com/dotnet/dotnet9-openapi/) to the OpenApi in the -NET ecosystem so I used Scalar [Nick's Video](https://www.youtube.com/watch?v=8yI4gD1HruY). For responses I used ProblemDetails as it's an RFC standard and tried avoiding throwing Exceptions for flow control. I could have added state to the repository and made it unavailable before it's initialized but I did not want to overcomplicate things for a POC.
+There have been some [changes](https://devblogs.microsoft.com/dotnet/dotnet9-openapi/) to the OpenApi in the -NET ecosystem so I used Scalar ([Nick's Video](https://www.youtube.com/watch?v=8yI4gD1HruY)). For responses I used ProblemDetails as it's an RFC standard and tried avoiding throwing Exceptions for flow control. I could have added state to the repository and made it unavailable before it's initialized but I did not want to overcomplicate things for a POC.
 
-A simple api key authentication was used [Nick's Video](https://www.youtube.com/watch?v=GrJJXixjR8M). I also grouped the minimal API's using this guide [link](https://www.tessferrandez.com/blog/2023/10/31/organizing-minimal-apis.html).
+A simple api key authentication was used ([Nick's Video](https://www.youtube.com/watch?v=GrJJXixjR8M)). I also grouped the minimal API's using this guide [link](https://www.tessferrandez.com/blog/2023/10/31/organizing-minimal-apis.html).
 
 ### To-do:
 
@@ -30,3 +30,4 @@ A simple api key authentication was used [Nick's Video](https://www.youtube.com/
 - model uses primitive types, DDD favors value types and entities
 - add pagination to the get all cities method
 - better refreshing in the repository layer
+- cleanup Program.cs (will need to look upp
