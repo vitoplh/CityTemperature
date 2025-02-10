@@ -13,9 +13,11 @@ Regarding the data I noticed that the temperatures are basically random numbers 
 
 `SELECT City, MIN(Temp), MAX(Temp), AVG(Temp) AS AvgTemp, COUNT(*) AS Count FROM test GROUP BY City ORDER BY AvgTemp ASC;`
 
-For the sake of simplicity an in-memory database was used. Since it's wrapped in a repository, it's easire to replace and integration tests with test containers can be used ([MS Docs](https://learn.microsoft.com/en-us/ef/core/testing/choosing-a-testing-strategy), [NDC video](https://www.youtube.com/watch?v=td9HE0vxsf4)). For a real database I'd also look into using EF Bulk Extension for improved performance.
+For the sake of simplicity an in-memory database was used (at first I wondered, if I'd just stick with the dictionary but then started thinking about sorting and pagination). Since it's wrapped in a repository, it's easire to replace and integration tests with test containers can be used ([MS Docs](https://learn.microsoft.com/en-us/ef/core/testing/choosing-a-testing-strategy), [NDC video](https://www.youtube.com/watch?v=td9HE0vxsf4)). For a real database I'd also look into using EF Bulk Extension for improved performance.
 
-There have been some [changes](https://devblogs.microsoft.com/dotnet/dotnet9-openapi/) to the OpenApi in the -NET ecosystem so I used Scalar [Nick's Video](https://localhost:7011/scalar/). For responses I used ProblemDetails as it's an RFC standard and tried avoiding throwing Exceptions for flow control. I could have added state to the repository and made it unavailable before it's initialized but I did not want to overcomplicate things for a POC.
+As for how to trigger updates, I was a bit torn. At first I wanted to implement detection for a file change, but turns out it's not always reliable. In Azure, we'd probably upload the file to blob storage, then have an event triggering an function that would process and load the file to the SQL server, making it completely decoupled from the API side (and I believe Azure SQL uses RCSI by default, so updates would not block reads). I am ignoring the edge case, if someone was accesing data by using pagination and the data would be updated then
+
+There have been some [changes](https://devblogs.microsoft.com/dotnet/dotnet9-openapi/) to the OpenApi in the -NET ecosystem so I used Scalar [Nick's Video](https://www.youtube.com/watch?v=8yI4gD1HruY). For responses I used ProblemDetails as it's an RFC standard and tried avoiding throwing Exceptions for flow control. I could have added state to the repository and made it unavailable before it's initialized but I did not want to overcomplicate things for a POC.
 
 A simple api key authentication was used [Nick's Video](https://www.youtube.com/watch?v=GrJJXixjR8M). I also grouped the minimal API's using this guide [link](https://www.tessferrandez.com/blog/2023/10/31/organizing-minimal-apis.html).
 
@@ -26,3 +28,5 @@ A simple api key authentication was used [Nick's Video](https://www.youtube.com/
 - improve OpenApi spec (currently authentication is not included)
 - see if the Startup service can be replaced with something else
 - model uses primitive types, DDD favors value types and entities
+- add pagination to the get all cities method
+- better refreshing in the repository layer
