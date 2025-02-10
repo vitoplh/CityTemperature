@@ -1,4 +1,5 @@
-﻿using CityTemperatureApp.Contracts.Api;
+﻿using CityTemperatureApp.ApiEndpoints.ValidationFilters;
+using CityTemperatureApp.Contracts.Api;
 using CityTemperatureApp.Infrastructure.Authentication;
 using CityTemperatureApp.Mapping;
 using CityTemperatureApp.Repository;
@@ -25,6 +26,7 @@ internal static class CityTemperatureEndpoints
             .WithDescription("This endpoint returns the named city and its min/max/avg temperatures.")
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
         group.MapGet("/averageTemperature", GetCityFilterByAverageTemperature)
+            .AddEndpointFilter<TemperatureParameterValidation>()
             .WithSummary("Get cities with an average temperature within the specified range.")
             .WithDescription("This endpoint returns cities filtered by average temperature within the specified range.")
             .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
@@ -46,33 +48,12 @@ internal static class CityTemperatureEndpoints
     static async Task<Results<Ok<CityTemperatureDto>, NotFound>> GetCityByName(string cityName, ICityTemperatureRepository cityTemperatureRepository)
     {
         var city = await cityTemperatureRepository.GetCity(cityName);
-        
         return city is null ? TypedResults.NotFound() : TypedResults.Ok(city.ToDto());
     }
     
     static async Task<Results<Ok<List<CityAverageTemperatureDto>>, NotFound, BadRequest<ProblemDetails>>> 
         GetCityFilterByAverageTemperature(float? greaterThan, float? lowerThan, ICityTemperatureRepository cityTemperatureRepository)
     {
-        if (greaterThan is null && lowerThan is null)
-        {
-            return TypedResults.BadRequest(new ProblemDetails
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Title = "Bad Request",
-                Detail = "No arguments provided",
-            });
-        }
-
-        if (greaterThan is not null && lowerThan is not null && greaterThan > lowerThan)
-        {
-            return TypedResults.BadRequest(new ProblemDetails
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Title = "Bad request",
-                Detail = "Greater than cannot be lower than value.",
-            });
-        }
-        
         var cities = await cityTemperatureRepository.GetCityFilterByAverageTemperature(greaterThan, lowerThan);
         var citiesResponse = cities.Select(c => c.ToFilteredDto()).ToList();
         
