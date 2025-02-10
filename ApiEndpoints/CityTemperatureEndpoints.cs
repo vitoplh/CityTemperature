@@ -63,13 +63,13 @@ internal static class CityTemperatureEndpoints
             });
         }
 
-        if (greaterThan is not null && lowerThan is not null && greaterThan < lowerThan)
+        if (greaterThan is not null && lowerThan is not null && greaterThan > lowerThan)
         {
             return TypedResults.BadRequest(new ProblemDetails
             {
                 Status = StatusCodes.Status400BadRequest,
                 Title = "Bad request",
-                Detail = "Greater value cannot be lower than lower value.",
+                Detail = "Greater than cannot be lower than value.",
             });
         }
         
@@ -89,7 +89,7 @@ internal static class CityTemperatureEndpoints
             {
                 Status = StatusCodes.Status503ServiceUnavailable,
                 Title = "Data Import Service Unavailable",
-                Detail = "Data import service is currently processing a request."
+                Detail = "Data import service is currently processing a file."
             }),
             _ => throw new NotSupportedException($"Unknown data import service result type: {result.GetType().Name}")
         };
