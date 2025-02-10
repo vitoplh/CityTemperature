@@ -25,6 +25,7 @@ public class DataImportService(
         {
             return DataImportServiceResponse.Unavailable;
         }
+        _state = DataImportServiceState.Processing;
         Task.Run(ProcessFile);
         return DataImportServiceResponse.Accepted;
     }
@@ -40,8 +41,7 @@ public class DataImportService(
             {
                 throw new NullReferenceException("City temperature repository is null");
             }
-            
-            _state = DataImportServiceState.Processing;
+
             logger.LogInformation("Processing data file: {filePath}", _filePath);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -51,16 +51,16 @@ public class DataImportService(
 
             using var reader = new StreamReader(_filePath, Encoding.UTF8);
             using var csv = new CsvReader(reader, config);
-            
+
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            
+
             var records = csv.GetRecords<Measurement>();
             var listOfCities = new Dictionary<string, CityTemperature>();
-            
+
             foreach (var record in records)
             {
                 var cityFound = listOfCities.TryGetValue(record.City, out var city);
-    
+
                 if (!cityFound)
                 {
                     listOfCities.Add(record.City, new CityTemperature(record.City, record.Temperature));
@@ -70,14 +70,19 @@ public class DataImportService(
                     city!.AddMeasurement(record.Temperature);
                 }
             }
+
             var dtoList = listOfCities.Select(kvp => kvp.Value.ToDto()).ToList();
             var rowsStored = await cityRepository.UpdateCities(dtoList);
-            logger.LogInformation("Processing data file completed in {Time} - {Rows} records have been stored", watch.Elapsed, rowsStored);
-            _state = DataImportServiceState.Available;
+            logger.LogInformation("Processing data file completed in {Time} - {Rows} records have been stored",
+                watch.Elapsed, rowsStored);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Exception message {msg}", ex.Message);
+        }
+        finally
+        {
+            _state = DataImportServiceState.Available;
         }
     }
 }
