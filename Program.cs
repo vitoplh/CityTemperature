@@ -17,12 +17,17 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDataba
 
 builder.Services.AddScoped<ICityTemperatureRepository, CityTemperatureTemperatureRepository>();
 builder.Services.AddSingleton<IDataImportService, DataImportService>();
-builder.Services.AddHostedService<StartupService>();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+var dataImportService = app.Services.GetRequiredService<IDataImportService>();
+if (dataImportService.RefreshData() != DataImportServiceResponse.Accepted)
+{
+    throw new Exception("Failed to start city initialization service");
+}
 
 if (!app.Environment.IsDevelopment())
 {

@@ -26,7 +26,6 @@ A simple api key authentication was used [Nick's Video](https://www.youtube.com/
 - switch from in-memory DB to something better
 - add cancellation tokens
 - improve OpenApi spec (currently authentication is not included)
-- see if the Startup service can be replaced with something else
 - model uses primitive types, DDD favors value types and entities
 - add pagination to the get all cities method
 - better refreshing in the repository layer

@@ -26,7 +26,7 @@ public class TemperatureParameterValidation() : IEndpointFilter
             {
                 Status = StatusCodes.Status400BadRequest,
                 Title = "Bad request",
-                Detail = "Greater than cannot be lower than value.",
+                Detail = "Parameters appear to be switched. GreaterThan cannot be higher than lowerThan.",
             });
         }
         
