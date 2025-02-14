@@ -19,6 +19,8 @@ public class DataImportService(
     private DataImportServiceState _state = DataImportServiceState.Uninitialized;
     private readonly string _filePath = options.Value.AbsoluteFilePath;
 
+    public DataImportServiceState State => _state;
+
     public DataImportServiceResponse RefreshData()
     {
         if (_state == DataImportServiceState.Processing)

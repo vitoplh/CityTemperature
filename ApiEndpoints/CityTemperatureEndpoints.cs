@@ -33,13 +33,16 @@ internal static class CityTemperatureEndpoints
         group.MapPut("/", RefreshData)
             .WithSummary("Refresh data")
             .WithDescription("This endpoint triggers a data refresh by re-importing the data file.");
+        group.MapGet("/importStatus", GetImportStatus)
+            .WithSummary("Status of the data refresh")
+            .WithDescription("This endpoint triggers checks the state of the import service");
             
         return group;
     }
     
     static async Task<Results<Ok<List<CityTemperatureDto>>, NotFound>> GetCities(ICityTemperatureRepository cityTemperatureRepository)
     {
-        var cities = await cityTemperatureRepository.GetCitiesAsync();
+        var cities = await cityTemperatureRepository.GetCities();
         var citiesResponse = cities.Select(c => c.ToDto()).ToList();
         
         return cities.Count == 0 ? TypedResults.NotFound() : TypedResults.Ok(citiesResponse);
@@ -60,12 +63,12 @@ internal static class CityTemperatureEndpoints
         return cities.Count == 0 ? TypedResults.NotFound() : TypedResults.Ok(citiesResponse);
     }
 
-    static Results<Ok, ProblemHttpResult> RefreshData(IDataImportService dataImportService, ICityTemperatureRepository cityTemperatureRepository)
+    static Results<Accepted, ProblemHttpResult> RefreshData(IDataImportService dataImportService)
     {
         var result = dataImportService.RefreshData();
         return result switch
         {
-            DataImportServiceResponse.Accepted => TypedResults.Ok(),
+            DataImportServiceResponse.Accepted => TypedResults.Accepted("/importStatus"),
             DataImportServiceResponse.Unavailable => TypedResults.Problem(new ProblemDetails
             {
                 Status = StatusCodes.Status503ServiceUnavailable,
@@ -73,6 +76,22 @@ internal static class CityTemperatureEndpoints
                 Detail = "Data import service is currently processing a file."
             }),
             _ => throw new NotSupportedException($"Unknown data import service result type: {result.GetType().Name}")
+        };
+    }
+
+    static Results<Ok, ProblemHttpResult> GetImportStatus(IDataImportService dataImportService)
+    {
+        var state = dataImportService.State;
+        return state switch
+        {
+            DataImportServiceState.Available => TypedResults.Ok(),
+            DataImportServiceState.Processing => TypedResults.Problem(new ProblemDetails
+            {
+                Status = StatusCodes.Status503ServiceUnavailable,
+                Title = "File currently being processed.",
+                Detail = "Data import service is currently processing a file."
+            }),
+            _ => throw new NotSupportedException($"Unknown data import service state type: {state.GetType().Name}")
         };
     }
 }

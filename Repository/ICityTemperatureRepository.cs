@@ -4,7 +4,7 @@ namespace CityTemperatureApp.Repository;
 
 public interface ICityTemperatureRepository
 {
-    Task<List<CityTemperatureDataDto>> GetCitiesAsync();
+    Task<List<CityTemperatureDataDto>> GetCities();
     
     Task<CityTemperatureDataDto?> GetCity(string name);
 

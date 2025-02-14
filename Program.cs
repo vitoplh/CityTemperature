@@ -15,7 +15,7 @@ builder.Services.Configure<AuthenticationOptions>(builder.Configuration.GetSecti
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("testDb"));
 
-builder.Services.AddScoped<ICityTemperatureRepository, CityTemperatureTemperatureRepository>();
+builder.Services.AddScoped<ICityTemperatureRepository, CityTemperatureRepository>();
 builder.Services.AddSingleton<IDataImportService, DataImportService>();
 
 builder.Services.AddProblemDetails();

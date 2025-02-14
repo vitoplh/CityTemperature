@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityTemperatureApp.Repository;
 
-public class CityTemperatureTemperatureRepository(AppDbContext context) : ICityTemperatureRepository
+public class CityTemperatureRepository(AppDbContext context) : ICityTemperatureRepository
 {
-    public async Task<List<CityTemperatureDataDto>> GetCitiesAsync()
+    public async Task<List<CityTemperatureDataDto>> GetCities()
     {
         return await context.Cities.AsNoTracking().ToListAsync();
     }
