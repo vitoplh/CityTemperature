@@ -40,12 +40,12 @@ internal static class CityTemperatureEndpoints
         return group;
     }
     
-    static async Task<Results<Ok<List<CityTemperatureDto>>, NotFound>> GetCities(ICityTemperatureRepository cityTemperatureRepository)
+    static async Task<Ok<IEnumerable<CityTemperatureDto>>> GetCities(ICityTemperatureRepository cityTemperatureRepository)
     {
         var cities = await cityTemperatureRepository.GetCities();
         var citiesResponse = cities.Select(c => c.ToDto()).ToList();
         
-        return cities.Count == 0 ? TypedResults.NotFound() : TypedResults.Ok(citiesResponse);
+        return TypedResults.Ok<IEnumerable<CityTemperatureDto>>(citiesResponse);
     }
     
     static async Task<Results<Ok<CityTemperatureDto>, NotFound>> GetCityByName(string cityName, ICityTemperatureRepository cityTemperatureRepository)
